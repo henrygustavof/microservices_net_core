@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ShoesOnContainers/src/Services/ProductCatalogApi/bin/Debug/netcoreapp2.0/ProductCatalogApi.dll",
+            "program": "${workspaceFolder}/ShoesOnContainers/src/Web/WebMvc/bin/Debug/netcoreapp2.0/WebMvc.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/ShoesOnContainers/src/Services/ProductCatalogApi",
+            "cwd": "${workspaceFolder}/ShoesOnContainers/src/Web/WebMvc",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
