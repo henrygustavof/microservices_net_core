@@ -1,6 +1,6 @@
 using System;
 
-namespace WebMvc.Models
+namespace ShoesOnContainers.WebMvc.Models
 {
     public class ErrorViewModel
     {

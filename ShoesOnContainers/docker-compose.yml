@@ -5,7 +5,25 @@ networks:
    backend:
 
 services:
-   catalog:
+
+  webmvc:
+        build: 
+          context: .\src\Web\WebMvc
+          dockerfile: Dockerfile
+        environment: 
+          - ASPNETCORE_ENVIRONMENT=Development 
+          - CatalogUrl=http://catalog
+        container_name: webshop
+        ports:
+          - "5500:80"
+        networks:
+          - frontend 
+        depends_on:
+          - catalog
+          
+
+
+  catalog:
       build:
          context: .\src\Services\ProductCatalogApi
          dockerfile: Dockerfile
@@ -24,7 +42,7 @@ services:
       depends_on:
          - mssqlserver
          
-   mssqlserver:
+  mssqlserver:
       image: "microsoft/mssql-server-linux:latest"
       ports:
          - "1445:1433"
