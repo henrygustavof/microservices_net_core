@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:52488/",
+      "applicationUrl": "http://localhost:5200/",
       "sslPort": 0
     }
   },
@@ -15,13 +15,12 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WebMvc": {
+    "ShoesOnContainers.Web.WebMvc": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:52489/"
+      }
     }
   }
 }

@@ -55,7 +55,7 @@ namespace ProductCatalogApi.Data.Migrations
 
                     b.Property<string>("PictureFileName");
 
-                    b.Property<string>("PictureUrl");
+                    b.Property<string>("PictureUri");
 
                     b.Property<decimal>("Price");
 

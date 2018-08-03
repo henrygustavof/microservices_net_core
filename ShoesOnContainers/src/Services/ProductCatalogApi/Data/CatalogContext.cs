@@ -28,7 +28,7 @@ namespace ProductCatalogApi.Data
                     .HasMaxLength(50);
             builder.Property(c => c.Price)
                 .IsRequired(true);
-            builder.Property(c => c.PictureUrl)
+            builder.Property(c => c.PictureUri)
                 .IsRequired(false);
             builder.HasOne(c => c.CatalogBrand)
                 .WithMany()

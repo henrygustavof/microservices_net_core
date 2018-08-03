@@ -51,7 +51,7 @@ namespace ProductCatalogApi.Data.Migrations
                     Description = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false),
                     PictureFileName = table.Column<string>(nullable: true),
-                    PictureUrl = table.Column<string>(nullable: true),
+                    PictureUri = table.Column<string>(nullable: true),
                     CatalogTypeId = table.Column<int>(nullable: false),
                     CatalogBrandId = table.Column<int>(nullable: false)
                 },

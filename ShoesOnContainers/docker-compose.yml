@@ -1,56 +1,78 @@
 version: "3.2"
 
 networks:
-   frontend:
-   backend:
+  frontend:
+  backend:
+
 
 services:
 
   webmvc:
-        build: 
-          context: .\src\Web\WebMvc
-          dockerfile: Dockerfile
-        environment: 
-          - ASPNETCORE_ENVIRONMENT=Development 
-          - CatalogUrl=http://catalog
-        container_name: webshop
-        ports:
-          - "5500:80"
-        networks:
-          - frontend 
-        depends_on:
-          - catalog
-          
+    build: 
+      context: .\src\Web\WebMvc
+      dockerfile: Dockerfile
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
+      - CatalogUrl=http://catalog
+      - IdentityUrl=http://192.168.0.3:5000
+    container_name: webshop
+    ports:
+      - "5200:80"
+    networks:
+      - frontend 
+    depends_on:
+      - catalog
+      - tokenserver
+             
 
 
   catalog:
-      build:
-         context: .\src\Services\ProductCatalogApi
-         dockerfile: Dockerfile
-      image: shoes/catalog
-      environment:
-         - DatabaseServer=mssqlserver
-         - DatabaseName=CatalogDb
-         - DatabaseUser=sa
-         - DatabaseUserPassword=Str0ngPassword!
-      container_name: catalogapi
-      ports:
-         - "5000:80"
-      networks:
-         - backend
-         - frontend
-      depends_on:
-         - mssqlserver
+    build:
+     context: .\src\Services\ProductCatalogApi
+     dockerfile: Dockerfile
+    image: shoes/catalog
+    environment:
+     - DatabaseServer=mssqlserver
+     - DatabaseName=CatalogDb
+     - DatabaseUser=sa
+     - DatabaseUserPassword=MyProduct!123
+    container_name: catalogapi
+    ports:
+     - "5100:80"
+    networks:
+     - backend
+     - frontend
+    depends_on:
+     - mssqlserver
+
+
+  tokenserver:
+    build: 
+      context: .\src\Services\TokenServiceApi
+      dockerfile: Dockerfile
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
+      - MvcClient=http://localhost:5200   
+    container_name: tokenserviceapi
+    ports:
+      - "5000:80"
+    networks:
+      - backend
+      - frontend 
+    depends_on:
+      - mssqlserver
+
+
          
   mssqlserver:
       image: "microsoft/mssql-server-linux:latest"
       ports:
-         - "1445:1433"
+         - "1402:1433"
 
       container_name: mssqlcontainer
       environment:
          - ACCEPT_EULA=Y
-         - SA_PASSWORD=Str0ngPassword!
+         - SA_PASSWORD=MyProduct!123
       networks:
          - backend
 

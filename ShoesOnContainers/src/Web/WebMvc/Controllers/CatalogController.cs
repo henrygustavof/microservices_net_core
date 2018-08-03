@@ -4,10 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ShoesOnContainers.Web.WebMvc.Models;
+using WebMvc.Models;
 using ShoesOnContainers.Web.WebMvc.Services;
 using ShoesOnContainers.Web.WebMvc.ViewModels;
-using ShoesOnContainers.WebMvc.Models;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WebMvc.Controllers
 {
@@ -20,6 +23,7 @@ namespace WebMvc.Controllers
 
         public async Task<IActionResult> Index(int? BrandFilterApplied, int? TypesFilterApplied, int? page)
         {
+           
             int itemsPage=10 ;
             var catalog = await _catalogSvc.GetCatalogItems(page ?? 0, itemsPage, BrandFilterApplied, TypesFilterApplied);
             var vm = new CatalogIndexViewModel()
@@ -43,13 +47,44 @@ namespace WebMvc.Controllers
 
             return View(vm);
         }
+        //[Authorize]
+        //public async Task<IActionResult> About()
+        //{
+        //    ViewData["Message"] = "Your application description page.";
+        //    var user = User as ClaimsPrincipal;
 
+        //    var token = await HttpContext.GetTokenAsync("access_token");
+        //    var idToken = await HttpContext.GetTokenAsync("id_token");
+        //    foreach (var claim in user.Claims)
+        //    {
+        //        Debug.WriteLine($"Claim Type: {claim.Type} - Claim Value : {claim.Value}");
+        //    }
+
+        //    if (token != null)
+        //    {
+        //        ViewData["access_token"] = token;
+
+        //    }
+        //    if (idToken != null)
+        //    {
+
+        //        ViewData["id_token"] = idToken;
+        //    }
+
+        //    return View();
+        //}
+
+        [Authorize]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
 
+
             return View();
         }
+
+
+
 
         public IActionResult Contact()
         {
@@ -62,5 +97,7 @@ namespace WebMvc.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        
     }
 }

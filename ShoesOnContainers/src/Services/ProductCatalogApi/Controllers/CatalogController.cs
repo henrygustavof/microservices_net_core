@@ -56,7 +56,7 @@ namespace ShoesOnContainers.Services.ProductCatalogApi.Controllers
             var item = await _catalogContext.CatalogItems.SingleOrDefaultAsync(c => c.Id == id);
             if (item != null)
             {
-                item.PictureUrl = item.PictureUrl.Replace("http://externalcatalogbaseurltobereplaced", _settings.Value.ExternalCatalogBaseUrl);
+                item.PictureUri = item.PictureUri.Replace("http://externalcatalogbaseurltobereplaced", _settings.Value.ExternalCatalogBaseUrl);
                 return Ok(item);
             }
             return NotFound();
@@ -190,7 +190,7 @@ namespace ShoesOnContainers.Services.ProductCatalogApi.Controllers
         private List<CatalogItem> ChangeUrlPlaceHolder(List<CatalogItem> items)
         {
             items.ForEach(
-                x => x.PictureUrl = x.PictureUrl.Replace("http://externalcatalogbaseurltobereplaced",
+                x => x.PictureUri = x.PictureUri.Replace("http://externalcatalogbaseurltobereplaced",
                 _settings.Value.ExternalCatalogBaseUrl));
             return items;
         }
