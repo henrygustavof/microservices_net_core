@@ -4,13 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebMvc.Models;
+ 
 using ShoesOnContainers.Web.WebMvc.Services;
 using ShoesOnContainers.Web.WebMvc.ViewModels;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using ShoesOnContainers.Web.WebMvc.Models;
 
 namespace WebMvc.Controllers
 {

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProductCatalogApi.Domain
+namespace ShoesOnContainers.Services.ProductCatalogApi.Domain
 {
     public class CatalogBrand
     {
-         public int id { get; set; }
+        public int Id { get; set; }
+
         public string Brand { get; set; }
+
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace ProductCatalogApi.Controllers
 {
@@ -13,20 +13,23 @@ namespace ProductCatalogApi.Controllers
     [Route("api/Pic")]
     public class PicController : Controller
     {
-        private readonly IHostingEnvironment _env;
+
+        private readonly IHostingEnvironment env;
+
         public PicController(IHostingEnvironment env)
         {
-            _env = env;
+            this.env = env;
+
         }
+
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetImage(int id)
+        public IActionResult Get(int id)
         {
-            var webRoot = _env.WebRootPath;
+            var webRoot = env.WebRootPath;
             var path = Path.Combine(webRoot + "/Pics/", "shoes-" + id + ".png");
             var buffer = System.IO.File.ReadAllBytes(path);
             return File(buffer, "image/png");
-
         }
 
     }

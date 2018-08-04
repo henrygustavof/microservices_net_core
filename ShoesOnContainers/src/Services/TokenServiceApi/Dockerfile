@@ -1,4 +1,4 @@
-﻿FROM microsoft/aspnetcore-build:2.0.0 AS build-env
+﻿FROM microsoft/aspnetcore-build:2.0 AS build-env
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -11,7 +11,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # build runtime image
-FROM microsoft/aspnetcore:2.0.0
+FROM microsoft/aspnetcore:2.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 EXPOSE 80/tcp

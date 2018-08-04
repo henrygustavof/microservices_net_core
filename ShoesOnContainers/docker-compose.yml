@@ -1,4 +1,4 @@
-version: "3.2"
+﻿version: "3.2"
 
 networks:
   frontend:
@@ -8,13 +8,18 @@ networks:
 services:
 
   webmvc:
+    image: shoes/mvc
     build: 
       context: .\src\Web\WebMvc
       dockerfile: Dockerfile
     environment: 
       - ASPNETCORE_ENVIRONMENT=Development 
       - CatalogUrl=http://catalog
-      - IdentityUrl=http://192.168.0.3:5000
+      - IdentityUrl=http://10.0.75.1:5000
+      - CartUrl=http://cart
+      - OrderUrl=http://order
+      
+       
     container_name: webshop
     ports:
       - "5200:80"
@@ -23,36 +28,77 @@ services:
     depends_on:
       - catalog
       - tokenserver
+      - cart
+      - order
              
-
+  cart:
+    image: shoes/cart
+    build: 
+      context: .\src\Services\CartApi
+      dockerfile: Dockerfile
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
+      - IdentityUrl=http://10.0.75.1:5000
+    container_name: cartapi
+    ports:
+      - "5500:80"
+    networks:
+      - backend
+      - frontend 
+    depends_on:
+      - basket.data
+      - tokenserver 
+      - rabbitmq
 
   catalog:
-    build:
-     context: .\src\Services\ProductCatalogApi
-     dockerfile: Dockerfile
     image: shoes/catalog
-    environment:
-     - DatabaseServer=mssqlserver
-     - DatabaseName=CatalogDb
-     - DatabaseUser=sa
-     - DatabaseUserPassword=MyProduct!123
+    build: 
+      context: .\src\Services\ProductCatalogApi
+      dockerfile: Dockerfile
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
     container_name: catalogapi
     ports:
-     - "5100:80"
+      - "5100:80"
     networks:
-     - backend
-     - frontend
+      - backend
+      - frontend 
     depends_on:
-     - mssqlserver
-
+      - mssqlserver
+      
+  order:
+    image: shoes/order
+    build: 
+      context: .\src\Services\OrderApi
+      dockerfile: Dockerfile
+    
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development 
+      - IdentityUrl=http://tokenserver
+      - SQLSERVER_HOST=mssqldata
+      - SA_PASSWORD=MyProduct!123
+      - DATABASE=OrdersDb
+    container_name: orderapi
+    ports:
+      - "5600:80"
+    networks:
+      - backend
+      - frontend 
+    depends_on:
+      - mssqlserver
+      - tokenserver 
+      - rabbitmq
 
   tokenserver:
+    image: shoes/tokenservice
     build: 
       context: .\src\Services\TokenServiceApi
       dockerfile: Dockerfile
     environment: 
       - ASPNETCORE_ENVIRONMENT=Development 
       - MvcClient=http://localhost:5200   
+      - BasketApiClient=http://localhost:5500
+      - OrderApiClient=http://localhost:5600
     container_name: tokenserviceapi
     ports:
       - "5000:80"
@@ -63,18 +109,36 @@ services:
       - mssqlserver
 
 
-         
   mssqlserver:
-      image: "microsoft/mssql-server-linux:latest"
-      ports:
-         - "1402:1433"
+    image: "microsoft/mssql-server-linux:2017-latest"
+    container_name: mssqldata
+    ports:
+      - "1402:1433" 
+    networks:
+      - backend
+    environment:
+      - SA_PASSWORD=MyProduct!123
+      - ACCEPT_EULA="Y"
+  
+   
 
-      container_name: mssqlcontainer
-      environment:
-         - ACCEPT_EULA=Y
-         - SA_PASSWORD=MyProduct!123
-      networks:
-         - backend
+  basket.data:
+    image: redis
+    container_name: redisdb
+    ports:
+      - "6377:6379"  
+    networks:
+      - backend 
 
-      
-
+  rabbitmq:
+     image: rabbitmq:3-management
+     container_name: rabbitmq
+     hostname: myrabbitmq
+     ports:
+        - "15672:15672"
+        - "5672:5672"
+        - "5671:5671"
+     volumes:
+        - ~/rabbitmq:/var/lib/rabbitmq/mnesia   
+     networks:
+       - backend 

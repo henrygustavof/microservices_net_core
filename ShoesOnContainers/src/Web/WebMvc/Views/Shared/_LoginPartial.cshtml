@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using ShoesOnContainers.Web.WebMvc.Services
+@using ShoesOnContainers.Web.WebMvc.Models
 
-
-
+@inject IIdentityService<ApplicationUser> UserManager
  @if (User.FindFirst(x => x.Type == "preferred_username") != null) {
 
     <section class="col-lg-4 col-md-5 col-xs-12">
@@ -16,7 +17,13 @@
 
                 <section class="esh-identity-drop">
 
-                   
+                    <a class="esh-identity-item"
+                       asp-controller="Order"
+                       asp-action="Index">
+
+                        <div class="esh-identity-name esh-identity-name--upper">My orders</div>
+                        <img class="esh-identity-image" src="~/images/my_orders.png">
+                    </a>
 
                    
 
@@ -32,7 +39,7 @@
     </section>
 
     <section class="col-lg-1 col-xs-12">
-     
+     @await Component.InvokeAsync("Cart", new { user = UserManager.Get(User) })
     </section>
 
 }

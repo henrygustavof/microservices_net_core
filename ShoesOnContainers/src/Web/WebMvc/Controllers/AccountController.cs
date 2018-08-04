@@ -39,7 +39,7 @@ namespace WebMvc.Controllers
             }
             // "Catalog" because UrlHelper doesn't support nameof() for controllers
             // https://github.com/aspnet/Mvc/issues/5853
-            return RedirectToAction(nameof(CatalogController.About), "Catalog");
+            return RedirectToAction(nameof(CatalogController.Index), "Catalog");
         }
 
         //public async Task<IActionResult> Signout()

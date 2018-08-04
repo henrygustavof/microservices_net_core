@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using ShoesOnContainers.Web.WebMvc.Models;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace ShoesOnContainers.Web.WebMvc
 {
@@ -28,16 +31,24 @@ namespace ShoesOnContainers.Web.WebMvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options => {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 
             services.Configure<AppSettings>(Configuration);
+            services.Configure<PaymentSettings>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IHttpClient, CustomHttpClient>();
             services.AddTransient<ICatalogService, CatalogService>();
+          
+            services.AddTransient<IIdentityService<ApplicationUser>, IdentityService>();
+            services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IOrderService, OrderService>();
 
-         
+
             var identityUrl = Configuration.GetValue<string>("IdentityUrl");
             var callBackUrl = Configuration.GetValue<string>("CallBackUrl");
             services.AddAuthentication(options =>
@@ -61,14 +72,14 @@ namespace ShoesOnContainers.Web.WebMvc
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("offline_access");
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
+                //options.TokenValidationParameters = new TokenValidationParameters()
+                //{
 
-                    NameClaimType = "name",
-                    RoleClaimType = "role"
-                };
-
-
+                //    NameClaimType = "name",
+                //    RoleClaimType = "role"
+                //};
+                options.Scope.Add("basket");
+                options.Scope.Add("order");
 
             });
         }

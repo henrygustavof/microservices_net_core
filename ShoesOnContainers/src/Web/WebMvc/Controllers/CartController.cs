@@ -6,19 +6,104 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Diagnostics;
-
+using ShoesOnContainers.Web.WebMvc.Services;
+using ShoesOnContainers.Web.WebMvc.Models;
+using ShoesOnContainers.Web.WebMvc.Models.CartModels;
+using Polly.CircuitBreaker;
 namespace WebMvc.Controllers
 {
     [Authorize]
     public class CartController : Controller
     {
-         
+        
+        private readonly ICartService _cartService;
+        private readonly ICatalogService _catalogService;
+        private readonly IIdentityService<ApplicationUser> _identityService;
+
+        public CartController(IIdentityService<ApplicationUser> identityService, ICartService cartService, ICatalogService catalogService)
+        {
+            _identityService = identityService;
+            _cartService = cartService;
+            _catalogService = catalogService;
+
+
+
+        }
+        public    IActionResult  Index()
+        {
+            //try
+            //{
+
+            //    var user = _identityService.Get(HttpContext.User);
+            //    var cart = await _cartService.GetCart(user);
+
+
+            //    return View();
+            //}
+            //catch (BrokenCircuitException)
+            //{
+            //    // Catch error when CartApi is in circuit-opened mode                 
+            //    HandleBrokenCircuitException();
+            //}
+
+            return View();
+        }
 
         [HttpPost]
-        public IActionResult AddToCart()
+        public async Task<IActionResult> Index(Dictionary<string, int> quantities, string action)
         {
-            string name ="Secured Method";
-            return View(name);
+              if (action == "[ Checkout ]")
+               {
+                   // var order = _cartService.MapCartToOrder(cart);
+                    return RedirectToAction("Create", "Order");
+                   // return Redirect(Url.Action("Create", "Order", order));
+               }
+
+            try
+            {
+                var user = _identityService.Get(HttpContext.User);
+                var cart = await _cartService.SetQuantities(user, quantities);
+                var vm = await _cartService.UpdateCart(cart);
+
+               
+            }
+            catch (BrokenCircuitException)
+            {
+                // Catch error when CartApi is in open circuit  mode                 
+                HandleBrokenCircuitException();
+            }
+
+            return View();
+
+        }
+
+            public async Task<IActionResult> AddToCart(CatalogItem productDetails)
+        {
+            try
+            {
+                if (productDetails.Id != null)
+                {
+                    var user = _identityService.Get(HttpContext.User);
+                    var product = new CartItem()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Quantity = 1,
+                        ProductName = productDetails.Name,
+                        PictureUrl = productDetails.PictureUri,
+                        UnitPrice = productDetails.Price,
+                        ProductId = productDetails.Id
+                    };
+                    await _cartService.AddItemToCart(user, product);
+                }
+                return RedirectToAction("Index", "Catalog");
+            }
+            catch (BrokenCircuitException)
+            {
+                // Catch error when CartApi is in circuit-opened mode                 
+                HandleBrokenCircuitException();
+            }
+
+            return RedirectToAction("Index", "Catalog");
 
         }
         //public async Task WriteOutIdentityInfo()
@@ -33,5 +118,11 @@ namespace WebMvc.Controllers
         //    }
 
         //}
+
+        private void HandleBrokenCircuitException()
+        {
+            TempData["BasketInoperativeMsg"] = "cart Service is inoperative, please try later on. (Business Msg Due to Circuit-Breaker)";
+        }
+
     }
 }
